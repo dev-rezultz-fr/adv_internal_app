@@ -1,0 +1,16 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="sm-styles.html">
+
+<dom-module id="sm-index">
+  <template>
+    <style include="sm-styles">
+    </style>
+    <div class="card">Accueil, avec tout plein d'infos et d'indicateurs sur moi</div>
+  </template>
+  <script>
+    class SmIndex extends Polymer.Element {
+      static get is() { return 'sm-index';}
+    }
+    window.customElements.define(SmIndex.is, SmIndex);
+  </script>
+</dom-module>

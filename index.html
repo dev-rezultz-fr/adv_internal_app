@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="Polymer Starter Kit">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=no">
+
+    <title>ADVENTS | Staff Me If You Can</title>
+    <meta name="description" content="Staff Me If You Can - Web app to manage my life as a consultant">
+
+    <base href="/edsa-staffme/">
+
+    <link rel="icon" href="images/manifest/favicon.ico">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3f51b5">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Staff Me If You Can">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Staff Me">
+		<link rel="shortcut icon" href="images/manifest/favicon.ico" type="image/x-icon" />
+		<link rel="apple-touch-icon" href="images/manifest/apple-touch-icon.png" />
+		<link rel="apple-touch-icon" sizes="57x57" href="images/manifest/apple-touch-icon-57x57.png" />
+		<link rel="apple-touch-icon" sizes="72x72" href="images/manifest/apple-touch-icon-72x72.png" />
+		<link rel="apple-touch-icon" sizes="76x76" href="images/manifest/apple-touch-icon-76x76.png" />
+		<link rel="apple-touch-icon" sizes="114x114" href="images/manifest/apple-touch-icon-114x114.png" />
+		<link rel="apple-touch-icon" sizes="120x120" href="images/manifest/apple-touch-icon-120x120.png" />
+		<link rel="apple-touch-icon" sizes="144x144" href="images/manifest/apple-touch-icon-144x144.png" />
+		<link rel="apple-touch-icon" sizes="152x152" href="images/manifest/apple-touch-icon-152x152.png" />
+		<link rel="apple-touch-icon" sizes="180x180" href="images/manifest/apple-touch-icon-180x180.png" />
+    <meta name="msapplication-TileImage" content="images/manifest/icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#3f51b5">
+    <meta name="msapplication-tap-highlight" content="no">
+
+    <script>window.Polymer = {rootPath: '/edsa-staffme/'};</script>
+    <script src="/edsa-staffme/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+    <link rel="import" href="src/sm-app.html">
+    <style>
+      body {margin: 0;font-family: 'Roboto', 'Arial', sans-serif;line-height: 1.5;min-height: 100vh;background-color: #eeeeee;}
+      #splash{position:fixed;top:0;bottom:0;left:0;right:0;z-index:-1;background-color:#fff}
+      #title{height: 96px;color:rgb(64,179,223);text-align:center;line-height:30px;margin-top:34px;font-size:20px;font-weight:normal;font-family: 'Roboto', 'Noto', sans-serif;}
+      #loading{color:rgb(195,196,197);background-color: #fff;margin-top:20px;text-align:center;}
+      #logo{color:rgb(195,196,197);background-color:#fff;margin-top:100px;text-align:center;}
+      #logo > img{width:200px;}
+      .loader {
+        border: 10px solid #f3f3f3; /* Light grey */
+		    border-top: 10px solid rgb(250,170,0);
+		    border-bottom: 10px solid rgb(168,203,23);
+        border-radius: 50%;width: 40px;height: 40px;margin:auto;margin-top:120px;margin-bottom:12px;
+      }
+      .ease{animation: spin 2s ease infinite;}
+      @keyframes spin {
+        0% { transform: rotate(0deg);}
+        100% { transform: rotate(360deg);}
+      }
+    </style>
+  </head>
+  <body>
+    <div id="splash" style="display:block;">
+      <div id="title">Staff Me If You Can</div>
+      <div id="loading">
+         <div class="loader ease"></div>
+        Chargement de l'application...
+      </div>
+      <div id="logo">
+        <img src="images/logo_inn_advents.png"/>
+      </div>
+    </div>
+    <sm-app id="app" style="display:none;"></sm-app>
+    <script>
+      var app = document.getElementById('app');
+      app.addEventListener('app-ready', function() {
+        console.log('#renderApp : app ready');
+        app.style.display = 'block';
+        document.getElementById('splash').style.display = 'none';
+      });
+      app.addEventListener('app-loading', function() {
+        console.log('app loading');
+        app.style.display = 'none';
+        document.getElementById('splash').style.display = 'block';
+      });
+      if(app.__dataClientsReady){
+        app.style.display = 'block';
+        document.getElementById('splash').style.display = 'none';
+      }
+      else{
+        app.dispatchEvent(new CustomEvent('app-loading'));
+      }
+    </script>
+  </body>
+</html>

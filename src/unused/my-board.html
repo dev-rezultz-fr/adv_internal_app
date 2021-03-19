@@ -1,0 +1,66 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="my-board">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 10px;
+      }
+    </style>
+
+    <div class="card">
+      <div class="row">
+        <paper-slider pin secondary-progress="1" step="1" min="0" max="8" value="4"></paper-slider>
+        <h1 class="flex">[[profile.name]]</h1>
+      </div>
+    </div>
+    <div class="card">
+      <div class="row">
+        <img src="images/[[profile.nick]]" class="circle"/>
+        <h1 style="margin-left:10px;">[[profile.name]]</h1>
+        <p class="flex" style="line-height:33px;">Consultant Senior qui aime la garrigue</p>
+      </div>
+      
+      <div class="row">
+        <p class="flex" style="margin-left:74px;text-align:right;line-height:33px;">Mon manager : [[getNameManager(profile.manager)]]</p>
+        <img src="images/[[getNickManager(profile.manager)]]" class="circle little"/>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    class MyBoard extends Polymer.Element {
+      static get is() { return 'my-board'; }
+      static get properties() {
+        return {
+          profile: {
+            type: Object,
+            reflectToAttribute: true
+          }
+        }
+      }
+
+      getNickManager(m){
+        return consultants[this.profile.manager].nick;
+      }
+
+      getNameManager(m){
+        return consultants[this.profile.manager].name;
+      }
+    }
+
+    window.customElements.define(MyBoard.is, MyBoard);
+  </script>
+</dom-module>

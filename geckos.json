@@ -1,0 +1,38 @@
+[
+  {"pot":"POT12000","client":"DCN", "status":"incomplete", "bidman":"GCAZ", "amount":"300","oxygen":"","mode":"",
+    "contributors":[
+      {"name":"GCAZ","role":"bidman","percent":100},
+      {"name":"FMOR","role":"lobby","percent":10}
+    ]
+  },
+  {"pot":"POT12001","client":"DCN", "status":"incomplete", "bidman":"GCAZ", "amount":"30","oxygen":"","mode":"",
+    "contributors":[
+      {"name":"GCAZ","role":"bidman","percent":100},
+      {"name":"FMOR","role":"lobby","percent":10}
+    ]
+  },
+  {"pot":"POT12002","client":"CAA", "status":"incomplete", "bidman":"GCAZ", "amount":"20","oxygen":"","mode":"",
+    "contributors":[
+      {"name":"GCAZ","role":"bidman","percent":100},
+      {"name":"FMOR","role":"lobby","percent":10}
+    ]
+  },
+  {"pot":"POT12003","client":"BIO", "status":"incomplete", "bidman":"FMOR", "amount":"120","oxygen":"","mode":"",
+    "contributors":[
+      {"name":"FMOR","role":"bidman","percent":100},
+      {"name":"BCUS","role":"lobby","percent":20}
+    ]
+  },
+  {"pot":"POT12004","client":"CNIM", "status":"incomplete", "bidman":"FMOR", "amount":"90","oxygen":"","mode":"",
+    "contributors":[
+      {"name":"FMOR","role":"bidman","percent":100},
+      {"name":"FGIL","role":"lobby","percent":15}
+    ]
+  },
+  {"pot":"POT12005","client":"DCN", "status":"incomplete", "bidman":"GCAZ", "amount":"12","oxygen":"","mode":"",
+    "contributors":[
+      {"name":"GCAZ","role":"bidman","percent":100},
+      {"name":"FMOR","role":"lobby","percent":10}
+    ]
+  }
+]

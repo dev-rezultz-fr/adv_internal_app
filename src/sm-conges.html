@@ -1,0 +1,75 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="sm-styles.html">
+<link rel="import" href="sm-icons.html">
+<link rel="import" href="sm-conges-budget.html">
+
+<dom-module id="sm-conges">
+  <template>
+    <style include="sm-styles">
+      :host{--paper-tab-ink:var(--staff-me-primary-accent-color);--paper-tabs-selection-bar-color:var(--staff-me-primary-accent-color);}
+      h5{margin:6px;font-style:italic;margin-top:16px;}
+    </style>
+    <iron-ajax id="ajax" url="[[rootPath]]staffme.php?e=[[user.email]]" on-response="_handleResponse"></iron-ajax>
+    <paper-tabs id="tabs" selected="0" on-selected-changed="_changeParam">
+      <paper-tab>En cours</paper-tab>
+      <paper-tab>Terminés</paper-tab>
+    </paper-tabs>
+    <h5>Données Oxygène actualisées chaque fin de mois</h5>
+    <template is="dom-repeat" items="[[data]]" filter="{{_filter(param)}}">
+      <sm-conges-budget budget="[[item]]"></sm-conges-budget>
+    </template>
+    <div class="card" id="loading">
+			Chargement des congés
+    </div>
+  </template>
+  <script>
+    class SmConges extends Polymer.Element {
+      static get is() { return 'sm-conges';}
+      static get properties() {
+        return {
+          rootPath: String,
+          param: {type: String, value:'0'},
+          user: {type: Object, reflectToAttribute: true},
+          data: Object
+        };
+      }
+      static get observers() {
+        return [
+          '_userEmailChanged(user.email)',
+        ];
+      }
+      _userEmailChanged(e){
+        this.refresh();
+      }
+      ready(){
+        super.ready();
+      }
+      refresh(q){
+        if(this.user){
+          console.log(this.$.ajax.url);
+          this.$.ajax.generateRequest();
+          this.$.loading.hidden = false;
+        }
+      }
+			_handleResponse(e){
+        //console.log(this.$.ajax.lastResponse);
+        this.set('data',this.$.ajax.lastResponse.data);
+        this.$.loading.hidden = true;
+      }
+      _filter(param){
+        return function(item){
+          return item.status == param;
+        };
+      }
+      _changeParam(e){
+        this.set('param',this.$.tabs.selected);
+        //console.log(this.param);
+      }
+    }
+    window.customElements.define(SmConges.is, SmConges);	
+  </script>
+</dom-module>

@@ -1,0 +1,183 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-slider/paper-slider.html">
+<link rel="import" href="my-icons.html">
+
+<link rel="lazy-import" href="my-board.html">
+<link rel="lazy-import" href="my-eval.html">
+
+<dom-module id="auto-eval">
+  <template>
+    <style>
+      :host {
+        --app-primary-color: rgb(64,179,223);
+        --app-secondary-color: white;
+        --app-orange-color: rgb(250,170,0);
+        --app-green-color: rgb(168,203,23);
+		    --app-grey-color: rgb(195,196,197);
+        display: block;
+        background-color: var(--app-grey-color);
+      }
+      app-drawer-layout:not([narrow]) [drawer-toggle] {
+        display: none;
+      }
+      app-toolbar{background-color:var(--app-primary-color);color:#fff;}
+      app-header {
+        color: #fff;
+        background-color: var(--app-primary-color);
+      }
+      app-header paper-icon-button {
+        --paper-icon-button-ink-color: white;
+      }
+      .drawer-list {
+        margin: 0 20px;
+      }
+      .drawer-list a {
+        display: block;
+        padding: 0 16px;
+        text-decoration: none;
+        color: black;
+        line-height: 40px;
+      }
+      .drawer-list a.iron-selected {
+        background-color: #eeeeee;
+        color: black;
+        font-weight: bold;
+      }
+    </style>
+
+    <app-location route="{{route}}"></app-location>
+    <app-route
+        route="{{route}}"
+        pattern="[[rootPattern]]:page"
+        data="{{routeData}}"
+        tail="{{subroute}}"></app-route>
+
+    <app-drawer-layout fullbleed>
+      <!-- Drawer content 
+      <app-drawer id="drawer" slot="drawer">
+        <app-toolbar>
+          <div main-title>[[profile.name]]</div>
+          <paper-icon-button icon="my-icons:switch" on-click="_switchProfile"></paper-icon-button>          
+        </app-toolbar>
+        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+          <a id="home" name="board" href="board">DashBoard</a>
+          <a name="eval" href="eval">Mon Eval</a>
+        </iron-selector>
+      </app-drawer>-->
+
+      <!-- Main content -->
+      <app-header-layout has-scrolling-region>
+
+        <app-header slot="header" condenses reveals effects="waterfall">
+          <app-toolbar>
+            <!--<paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>-->
+            <div main-title>[[title]]</div>
+          </app-toolbar>
+        </app-header>
+
+        <iron-pages
+            selected="[[page]]"
+            attr-for-selected="name"
+            fallback-selection="board"
+            role="main">
+          <my-board name="board" profile="[[profile]]"></my-board>
+          <my-eval name="eval" profile="[[profile]]"></my-eval>
+        </iron-pages>
+      </app-header-layout>
+    </app-drawer-layout>
+  </template>
+
+  <script>
+    let titles = {board:'DashBoard',eval:'Mon Eval'};
+    let consultants = {
+      cver: {name:'Clément Verdet',nick:'cver.png', manager: 'gcaz',isManager:false},
+      gcaz: {name:'Guilhem Cazenave',nick:'gcaz.jpg',manager:'jaym',isManager:true},
+      jaym: {name:'Jérémy Ayme',nick:'jaym.png',manager:0,isManager:true}
+    };
+    let defCons = 'cver';
+    class AutoEval extends Polymer.Element {
+
+      static get is() { return 'auto-eval'; }
+
+      static get properties() {
+        return {
+          page: {
+            type: String,
+            reflectToAttribute: true,
+            observer: '_pageChanged',
+          },
+          rootPattern: String,
+          routeData: Object,
+          subroute: String,
+        };
+      }
+
+      static get observers() {
+        return [
+          '_routePageChanged(routeData.page)',
+        ];
+      }
+
+      constructor() {
+        super();
+
+        // Get root pattern for app-route, for more info about `rootPath` see:
+        // https://www.polymer-project.org/2.0/docs/upgrade#urls-in-templates
+        this.rootPattern = (new URL(this.rootPath)).pathname;
+        this.profile = consultants[defCons];
+      }
+
+      _routePageChanged(page) {
+        // Polymer 2.0 will call with `undefined` on initialization.
+        // Ignore until we are properly called with a string.
+        if (page === undefined) {
+          return;
+        }
+
+        // If no page was found in the route data, page will be an empty string.
+        // Deault to 'board' in that case.
+        this.page = page || 'board';
+        this.title = titles[this.page];
+        // Close a non-persistent drawer when the page & route are changed.
+        if (!this.$.drawer.persistent) {
+          this.$.drawer.close();
+        }
+      }
+
+      _pageChanged(page) {
+        // Load page import on demand. Show 404 page if fails
+        this.title = titles[this.page];
+        var resolvedPageUrl = this.resolveUrl('my-' + page + '.html');
+        Polymer.importHref(
+            resolvedPageUrl,
+            null,
+            this._showPage404.bind(this),
+            true);
+      }
+
+      _showPage404() {
+        this.page = 'board';
+      }
+
+      _switchProfile(){
+        this.profile = (this.profile.isManager)?consultants[defCons]:consultants[this.profile.manager];
+        //this.page = 'board';
+        //this.title = titles[this.page];
+        //this.$.home.click();
+      }
+    }
+
+    window.customElements.define(AutoEval.is, AutoEval);
+  </script>
+</dom-module>

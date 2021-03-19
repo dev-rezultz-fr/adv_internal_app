@@ -1,0 +1,36 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="sm-expense">
+  <template>
+    <style include="shared-styles">
+      paper-icon-button{background-color:var(--staff-me-primary-accent-color);color:#fff;border-radius:50%;margin:8px;}
+    </style>
+    <div class="card row">
+      <p class="flex">Saisir mes Notes de Frais</p>
+      <paper-icon-button icon="sm-icons:camera" on-click="_takePicture"></paper-icon-button>
+      <input id="photo" type="file" accept="image/*" id="capture" on-change="_loadPhoto" hidden>
+    </div>
+    <div class="card">
+      <img id="photoDisplay" src="" style="height:100px;"/>
+    </div>
+  </template>
+  <script>
+    class SmExpense extends Polymer.Element {
+      static get is() { return 'sm-expense';}
+      _takePicture(e){
+        this.$.photo.click();
+      }
+      _loadPhoto(e){
+        var reader  = new FileReader();       
+        var photo = e.target.files[0];
+        if (photo) {
+          reader.readAsDataURL(photo);
+          this.$.photoDisplay.src = window.URL.createObjectURL(photo);
+        }
+      }
+    }
+    window.customElements.define(SmExpense.is, SmExpense);
+  </script>
+</dom-module>

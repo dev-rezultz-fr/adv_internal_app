@@ -1,0 +1,55 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="sm-styles.html">
+
+<dom-module id="sm-chiffre">
+  <template>
+    <style include="sm-styles">
+      :host{
+        --paper-tabs-selection-bar-color: var(--app-primary-color);
+        --paper-tab-ink: var(--app-primary-color);
+      }
+    </style>
+    <paper-tabs id="tabs" selected="{{selected}}">
+      <paper-tab name="incomplete">A attribuer</paper-tab>
+      <paper-tab name="complete">Attribué</paper-tab>
+      <paper-tab name="myscore">Mon CA</paper-tab>
+    </paper-tabs>    
+    <iron-pages selected="{{selected}}">
+      <div>
+        <div class="card"><iron-icon icon="sm:rowing"></iron-icon><span>A VENIR : Affaires à compléter</span></div>
+      </div>
+      <div>
+        <div class="card"><iron-icon icon="sm:rowing"></iron-icon><span>A VENIR : Affaires complétées</span></div>
+      </div>
+      <div>
+        <div class="card"><iron-icon icon="sm:rowing"></iron-icon><span>A VENIR : Mon CA reconnu</span></div>
+      </div>
+    </iron-pages>
+    
+		<iron-ajax id="ajax" url="[[rootPath]]geckos.json" handle-as="json" last-response="{{data}}" on-response="_handleResponse" on-error="_handleResponse"></iron-ajax>
+  </template>
+  <script>
+    class SmChiffre extends Polymer.Element {
+      static get is() { return 'sm-chiffre';}
+      static get properties() { 
+        return {
+          selected: String
+        };
+      }
+      ready(){
+        super.ready();
+        //this.$.tabs.select('incomplete');
+        this.set('selected',0);
+        this.$.ajax.generateRequest();
+      }
+      _handleResponse(e){
+        console.log(this.$.ajax.lastResponse);
+      }
+    }
+    window.customElements.define(SmChiffre.is, SmChiffre);
+  </script>
+</dom-module>

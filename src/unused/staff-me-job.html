@@ -1,0 +1,25 @@
+
+  <dom-module id="staff-me-job">
+  <template>
+    <style>   
+    </style>
+    <paper-item>
+      <paper-item-body two-line>
+        <div>[[job.title]]</div>
+        <div secondary>[[job.description]]</div>
+      </paper-item-body>
+      <paper-icon-button icon="schedule"></paper-icon-button>
+    </paper-item>
+  </template>
+  <script>
+    Polymer({
+      is: 'staff-me-job',
+      properties: {
+        job: {
+          type: Object,
+          notify: true
+        }
+      }
+    });
+  </script>
+  </dom-module>

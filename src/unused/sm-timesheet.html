@@ -1,0 +1,17 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="sm-timesheet">
+  <template>
+    <style include="shared-styles">
+    </style>
+    <div class="card">Saisir mes RMA</div>
+  </template>
+  <script>
+    class SmTimesheet extends Polymer.Element {
+      static get is() { return 'sm-timesheet';}
+    }
+    window.customElements.define(SmTimesheet.is, SmTimesheet);
+  </script>
+</dom-module>

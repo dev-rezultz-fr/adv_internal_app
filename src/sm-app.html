@@ -1,0 +1,205 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/iron-location/iron-location.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="sm-icons.html">
+<link rel="import" href="sm-styles.html">
+<script type="text/javascript" data-app-id="tIlnDsrNcuQkac5Pzvf0Tg" src="https://c64.assets-yammer.com/assets/platform_js_sdk.js"></script>
+<script type="text/javascript" data-app-id="tIlnDsrNcuQkac5Pzvf0Tg" src="../yammer.js"></script>
+
+<link rel="lazy-import" href="sm-index.html">
+<link rel="lazy-import" href="sm-conges.html">
+<link rel="lazy-import" href="sm-staffing.html">
+<link rel="lazy-import" href="sm-chiffre.html">
+
+<dom-module id="sm-app">
+  <template>
+    <style include="sm-styles">
+      :host {
+        --app-primary-color: rgb(64,179,223);
+        --app-secondary-color: white;
+        --app-third-color: rgb(168,203,23);
+        --app-grey-color: rgb(195,196,197);
+        display: block;
+      }
+
+      app-drawer-layout:not([narrow]) [drawer-toggle] {
+        display: none;
+      }
+
+      app-header, app-toolbar {
+        color: #fff;
+        background-color: var(--app-primary-color);
+      }
+
+      app-header paper-icon-button {
+        --paper-icon-button-ink-color: white;
+      }
+
+      .drawer-list {
+        margin: 0 20px;
+      }
+
+      .drawer-list a {
+        display: block;
+        padding: 0 16px;
+        text-decoration: none;
+        color: var(--app-grey-color);
+        line-height: 40px;
+        border-left: transparent 6px solid;
+      }
+
+      .drawer-list a.iron-selected {
+        color: var(--app-third-color);
+        font-weight: bold;
+        border-left: var(--app-third-color) 6px solid;
+      }
+
+      @media only screen and (min-device-width : 640px) {
+        iron-pages{width:500px;margin:auto;}
+      }
+    </style>
+
+    <iron-location url-space-regex="^[[rootPath]]" path="{{path}}" query="{{query}}" hash="{{hash}}"></iron-location>
+
+    <app-drawer-layout fullbleed narrow="{{narrow}}">
+      <!-- Drawer content -->
+        <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
+          <template is="dom-if" if="{{auth}}">
+            <app-toolbar>
+              <img class="avatar" src="[[user.mugshot_url]]" alt="[[user.full_nampe]]"/>
+              <span style="margin-left:16px;">[[user.first_name]]</span>
+            </app-toolbar>
+            <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+              <!--<a name="index" class="row" href="[[rootPath]]index">            
+                <iron-icon icon="sm:index"></iron-icon>
+                Tableau de bord
+              </a> -->
+              <a name="conges" class="row"  href="[[rootPath]]conges">           
+                <iron-icon icon="sm:conges"></iron-icon>
+                Mes Congés
+              </a>
+              <a name="staffing" class="row"  href="[[rootPath]]staffing">           
+                <iron-icon icon="sm:staffing"></iron-icon>
+                Mon Staffing
+              </a>
+              <a name="chiffre" class="row"  href="[[rootPath]]chiffre">           
+                <iron-icon icon="sm:chiffre"></iron-icon>
+                CA Reconnu
+              </a>
+            </iron-selector>
+          </template>
+        </app-drawer>
+        <app-toolbar>
+          <template is="dom-if" if="{{auth}}">
+            <paper-icon-button icon="sm:menu" drawer-toggle></paper-icon-button>
+          </template>
+          <div main-title>[[title]]</div>
+        </app-toolbar>
+        <div>
+          <template is="dom-if" if="{{!auth}}">
+            <div class="card">
+              <h1>Staff Me : Tu n'es pas connecté à l'appli</h1>
+              <a id="yamButton" on-click="_prev">Connecte-toi avec Yammer !!!</a>
+            </div>
+          </template>
+
+          <template is="dom-if" if="{{auth}}">
+            <iron-pages selected="[[page]]" attr-for-selected="id" role="main">
+              <sm-conges id="conges" user="{{user}}"></sm-conges>
+              <sm-staffing id="staffing"></sm-staffing>
+              <sm-chiffre id="chiffre"></sm-chiffre>
+            </iron-pages>
+          </template>
+        </div>
+    </app-drawer-layout>
+  </template>
+
+  <script>
+    var titles = {conges: 'Mes congés', staffing: 'Mon Staffing', chiffre: 'CA Reconnu'};
+    var defaultPage = 'conges';
+    var clientID = "tIlnDsrNcuQkac5Pzvf0Tg"
+      , redirectURI = "https://lab.advents.fr/projects/staffme"
+      , baseURI = "https://www.yammer.com/"
+      , userAuthURI = baseURI+"dialog/oauth?client_id="+clientID+"&response_type=token&redirect_uri="+redirectURI;
+
+    class SmApp extends Polymer.Element {
+      static get is() { return 'sm-app'; }
+      static get properties() {
+        return {
+          page: String,
+          rootPath: String,
+          user: Object,
+          auth:Boolean,
+          path: String,
+          query: String,
+          hash: String,
+          title: String
+        };
+      }
+      static get observers() {
+        return [
+          '_urlChanged(path,query)',
+        ];
+      }
+      _urlChanged(path,query) {
+        var pathFrags = (path)?path.replace(this.rootPath,'/').split('/'):[defaultPage];
+        var page = pathFrags[1] || defaultPage;
+        this.set('page',page);
+        this.set('title',titles[this.page]);
+        var resolvedPageUrl = this.resolveUrl('sm-' + page + '.html');
+        Polymer.importHref(
+            resolvedPageUrl,
+            null,
+            this._showPage404.bind(this),
+            true);
+        if (!this.$.drawer.persistent) {
+          this.$.drawer.close();
+        }
+      }
+      _showPage404() {
+        this.path = '';
+      }
+      ready(){
+        super.ready();
+        this.set('auth',false);
+        var auth,user;
+        yam.getLoginStatus(this._resolveAuth.bind(this),true);
+      }
+      _resolveAuth(response){
+        this.set('page',defaultPage);
+        this.set('auth',response.authResponse);
+        if (response.authResponse) {
+          this.set('user', response.user);
+          this.set('hash',''); // because when a response is given, hash is given
+          yam.platform.request({
+            url: "users.json",
+            method: "GET",
+            success: this._getColleagues.bind(this),
+            error: function (users) {
+              console.log('erreur',users);
+            }
+          });
+        }
+        else {
+          console.log('auth error');
+          this.set('user', {email:'guilhem.cazenave@advents.fr'});
+        }
+        this.dispatchEvent(new CustomEvent('app-ready'));
+      }
+      _getColleagues(u){
+        this.set('user.colleagues',u);
+      }
+      _prev(e){
+        e.preventDefault();
+        document.location.href = userAuthURI;
+      }
+    }
+
+    window.customElements.define(SmApp.is, SmApp);
+  </script>
+</dom-module>

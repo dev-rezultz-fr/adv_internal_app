@@ -1,0 +1,19 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="sm-styles.html">
+
+<dom-module id="sm-staffing">
+  <template>
+    <style include="sm-styles">
+    </style>
+    <div class="card">
+      <iron-icon icon="sm:rowing"></iron-icon>
+      <span>A VENIR : Stats sur mon staffing</span>
+    </div>
+  </template>
+  <script>
+    class SmStaffing extends Polymer.Element {
+      static get is() { return 'sm-staffing';}
+    }
+    window.customElements.define(SmStaffing.is, SmStaffing);
+  </script>
+</dom-module>

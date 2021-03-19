@@ -1,0 +1,76 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="sm-styles.html">
+<link rel="import" href="sm-icons.html">
+
+<dom-module id="sm-conges-budget">
+  <template>
+    <style include="sm-styles">
+      :host{
+        --paper-progress-active-color: var(--staff-me-third-accent-color);
+        --paper-progress-secondary-color : var(--staff-me-secondary-accent-color);
+        --paper-progress-container-color : var(--staff-me-fourth-accent-color);
+        --paper-progress-height : 12px;
+      }
+      #progress.closed{--paper-progress-active-color: var(--staff-me-primary-accent-color);}
+      #progress.error{--paper-progress-active-color: red;}
+      paper-progress{margin-top:12px;margin-bottom:12px;width:100%;}
+      #status > div {color:var(--staff-me-fourth-accent-color);font-size:12px;height:24px;line-height:24px;}
+      #status{margin-top:6px;margin-bottom:6px;}
+      #status > iron-icon{height:12px;margin-right:4px;}
+      iron-icon.check{color: var(--staff-me-third-accent-color);}
+      iron-icon.planned{color: var(--staff-me-secondary-accent-color);}
+      h1{height:24px;font-size:16px;margin:0;}
+      #year{color:var(--staff-me-primary-accent-color);font-weight:bold;}
+      #year.error{color: red;}
+      #footer{margin-top:6px;height:12px;font-size:10px;line-height:12px;text-decoration: underline;}
+    </style>
+    <div class="card" id="card">
+      <div class="row">
+        <h1 class="flex">[[budget.label]]</h1>
+        <iron-icon icon="sm:error" style="color:red;" hidden="{{!error}}"></iron-icon>
+        <span id="year">[[budget.year]]</span>
+      </div>
+			<paper-progress id="progress" min="0" max="[[budget.budget]]" value="[[budget.check]]" secondary-progress="[[budget.ongoing]]"></paper-progress>
+      <div class="row" id="status">
+        <div class="flex"><iron-icon icon="sm:check" class="check"></iron-icon><span>Pris : [[budget.check]]</span></div>
+        <div class="flex"><iron-icon icon="sm:planned" class="planned"></iron-icon><span>Planifiés : [[budget.planned]]</span></div>
+        <div class="flex"><iron-icon icon="sm:conges" class="solde"></iron-icon><span>Solde : [[budget.solde]]</span></div>
+      </div>
+      <div class="row" id="footer" hidden>
+        <div class="flex"></div>
+        <div>détails</div>
+      </div>
+		</div>
+  </template>
+  <script>
+    class SmCongesBudget extends Polymer.Element {
+      static get is() { return 'sm-conges-budget';}
+      static get properties() {
+        return {
+          rootPath: String,
+          budget: {type: Object, reflectToAttribute: true, observer: '_bdgChanged'},
+          closed: {type: Boolean, reflectToAttribute: true},
+          error: {type: Boolean, reflectToAttribute: true}
+        };
+      }
+      _bdgChanged(){
+        this.$.progress.classList.remove('closed');
+        this.$.progress.classList.remove('error');
+        this.$.year.classList.remove('error');
+        //console.log(this.budget);
+        this.set('closed',this.budget.status == '1');
+        this.set('error',(this.budget.year == '0' || this.budget.ongoing > this.budget.budget));
+        if(this.closed){
+          this.$.progress.classList.add('closed');
+        }
+        if(this.error && this.budget.year == '0'){
+          this.$.year.classList.add('error');
+        }
+        if(this.error && this.budget.solde < 0){
+          this.$.progress.classList.add('error');
+        }
+      }
+    }
+    window.customElements.define(SmCongesBudget.is, SmCongesBudget);
+  </script>
+</dom-module>

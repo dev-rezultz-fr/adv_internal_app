@@ -1,0 +1,70 @@
+<link rel="import" href="../bower_components/paper-styles/paper-styles.html" >
+<link rel="import" href="../bower_components/paper-styles/color.html">
+<link rel="import" href="../bower_components/paper-styles/typography.html">
+
+<!-- shared styles for all views -->
+<dom-module id="sm-styles">
+  <template>
+    <style>
+      :root {
+        /* Global variables */
+        --staff-me-primary-accent-color: rgb(64,179,223); 
+        --staff-me-secondary-accent-color: rgb(250,170,0);
+        --staff-me-third-accent-color: rgb(168,203,23);
+        --staff-me-fourth-accent-color: rgb(195,196,197);
+        --staff-me-primary-color: var(--paper-green-200);
+        --staff-me-error-accent-color: var(--paper-red-500);
+        --staff-me-error-color: var(--paper-red-200);
+        --staff-me-warning-accent-color: var(--paper-orange-500);
+        --staff-me-warning-color: var(--paper-orange-200);
+        --staff-me-success-accent-color: var(--paper-light-green-500);
+        --staff-me-success-color: var(--paper-green-200);
+        --staff-me-waiting-accent-color: var(--paper-light-blue-500);
+        --staff-me-waiting-color: var(--paper-blue-200);
+        --staff-me-back-accent-color: var(--paper-grey-800);
+        --staff-me-back-color: var(--paper-grey-200);
+      }
+      .card {
+        margin: 24px;
+        padding: 16px;
+        color: #757575;
+        border-radius: 5px;
+        background-color: #fff;
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+      }
+      .row{display:flex;flex-direction:row;}
+      .col{display:flex;flex-direction:column;}
+      .flex{flex:1;margin-left:10px;}
+      .circle {
+        width: 48px;
+        height: 48px;
+        text-align: center;
+        margin-right:12px;
+        color: #555;
+        border-radius: 50%;
+        background: #ddd;
+        font-size: 30px;
+        line-height: 48px;
+      }
+      .little {
+        width: 32px;
+        height: 32px;
+        margin-top:17px;
+        margin-left:10px;
+      }
+
+      h1 {
+        margin: 16px 0;
+        color: #212121;
+        font-size: 22px;
+      }
+      a:link, a:visited, a:hover, a:active{text-decoration: none;cursor:pointer;}
+      app-header{background-color : var(--staff-me-primary-accent-color);color:#fff;}
+      .prim {color: var(--staff-me-primary-accent-color);}
+      .seco {color: var(--staff-me-secondary-accent-color);}
+      .thir {color: var(--staff-me-third-accent-color);}
+      [hidden]{display:none;}
+      img.avatar{border-radius:50%;height:48px;width:48px;}
+    </style>
+  </template>
+</dom-module>

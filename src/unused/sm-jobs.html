@@ -1,0 +1,66 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="sm-jobs">
+  <template>
+    <style>
+      a:link, a:visited, a:hover, a:active{text-decoration: none;color:var(--staff-me-back-accent-color);}
+      a > paper-icon-button{color: #fff;}
+      app-header{background-color : var(--staff-me-secondary-accent-color);color:#fff;}
+      .star{color : var(--staff-me-secondary-accent-color);}
+      .comments{font-size:10px;font-style:italic;padding-top:3px;padding-bottom:3px;}
+      paper-item{padding-left:12px;padding-right:12px;}
+    </style>
+    <app-header fixed>
+        <app-toolbar>
+          <div main-title style="text-align:center;">Staff Yourself</div>
+          <a href="/"><paper-icon-button icon="apps"></paper-icon-button></a>
+        </app-toolbar>
+    </app-header>
+    <div>
+      <template is="dom-repeat" items="{{data}}" as="job">
+        <a href="/jobs/[[job.$key]]">
+          <paper-item>
+            <paper-item-body two-line>
+              <div>[[job.title]]</div>
+              <div secondary>[[job.description]]</div>
+              <div secondary class="comments">
+                <iron-icon icon="[[job.type_icon]]" style="height:16px;padding-bottom:2px;"></iron-icon> [[job.type_label]]
+                <iron-icon icon="record-voice-over" style="height:16px;padding-bottom:2px;"></iron-icon> [[job.owner]]
+                <iron-icon class="star" icon="star-border" style="float:right;height:16px;"></iron-icon>
+                <iron-icon class="star" icon="star-border" style="float:right;height:16px;"></iron-icon>
+                <iron-icon class="star" icon="star" style="float:right;height:16px;"></iron-icon>
+              </div>
+            </paper-item-body>
+            <iron-icon icon="more-vert"></iron-icon>
+          </paper-item>
+        </a>
+      </template>
+    </div>
+    <firebase-query id="query" app-name="staffMe" path="/jobs" data="{{data}}"></firebase-query>
+  </template>
+  <script>
+    class SmJobs extends Polymer.Element {
+      static get is() { return 'sm-jobs';}
+      static get properties() {
+        return {
+          data: {
+            type: Object
+          }
+        };
+      }      
+      static get observers(){
+        return [
+          // Observer method name, followed by a list of dependencies, in parenthesis
+          '_dataChanged(data.splices)'
+        ];
+      } 
+
+      _dataChanged(splices) {
+        // do something when the query returns values
+        // console.log(this.data);
+      }
+    }
+    window.customElements.define(SmJobs.is, SmJobs);
+  </script>
+</dom-module>

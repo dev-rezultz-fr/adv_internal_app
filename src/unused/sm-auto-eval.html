@@ -1,0 +1,121 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-slider/paper-slider.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="sm-auto-eval">
+  <template>
+    <style include="shared-styles">
+      :host{        
+        --paper-slider-active-color:var(--staff-me-secondary-accent-color);
+        --paper-slider-knob-color:var(--staff-me-secondary-accent-color);
+        --paper-slider-pin-color:var(--staff-me-third-accent-color);
+      }
+      iron-icon{cursor:pointer;}
+      .grade:not(:last-child){border-right:1px #666 solid;}
+      .grade{flex:1;text-align:center;}
+      .row{margin-right:8px;margin-left:8px;width:100%;}
+      div.circle{font-size:24px;height:40px;width:40px;margin-top:8px;background-color:var(--staff-me-third-accent-color);color:#fff;line-height: 40px;}
+      paper-slider{width:100%;}
+      h4{margin-left:12px;cursor:pointer;user-select:none;}
+      paper-icon-button{background-color:var(--staff-me-primary-accent-color);color:#fff;border-radius:50%;margin:8px;}
+      paper-icon-button[disabled]{background-color:var(--staff-me-third-accent-color);}
+    </style>
+    <div class="card">
+      <div class="row">
+        <img class="circle" src="[[user.photo_man]]"></img>
+        <p>Mon manager : [[user.manager]]</p>
+      </div>
+      <div class="row">
+        <p class="flex">Statut : [[user.statusAutoEval]]</p>
+        <paper-icon-button icon="sm-icons:send" on-click="_sendEval"></paper-icon-button>
+      </div>
+    </div>
+    <template is="dom-repeat" items="{{skills}}" as="sk" index-as="rub_no">
+      <h4 on-click="_collapseSkills">[[sk.label]]</h4>
+      <iron-collapse id="rub-[[rub_no]]">
+        <template is="dom-repeat" items="{{sk.skills}}" as="s" index-as="skill_no">
+          <div class="card">
+            <div class="row">
+              <p class="flex">[[s]]</p>
+              <div class="circle" id="mark-[[rub_no]]-[[skill_no]]">[[arrayItem(user.autoEval.*,rub_no, skill_no)]]</div>
+            </div>
+            <paper-slider min="0" max="10" pin index="[[rub_no]]-[[skill_no]]" value="[[arrayItem(user.autoEval.*,rub_no, skill_no)]]" on-value-change="_changeVal"></paper-slider>
+            <div class="row">
+              <div class="grade">CJ</div>
+              <div class="grade">CC</div>
+              <div class="grade">CS</div>
+              <div class="grade">MAN</div>
+              <div class="grade">SM</div>
+            </div>
+          </div>  
+        </template>
+      </iron-collapse>
+    </template>
+  </template>
+  <script>
+    var SKILLS = [
+      {label: 'Fondamentaux du Consultant', skills: [
+        'Leadership','Travail en équipe','Autonomie / proactivité','Capacité d\'analyse / Résolution de problèmes',
+        'Rédaction de document','Contexte international (langues)','Conduite de réunion','Reporting','Organisation du travail et du temps',
+        'Participation / Animation vie du cabinet','Valeurs du Cabinet','Connaissance de l\'organisation et processus internes'
+      ]},
+      {label: ' Philosophie / méthodologie du conseil', skills: [
+        'Cadrage','Aide au choix','Construction de projet','Validation projet','Après-projet','Conduite du changement','Gestion de projet'
+      ]},
+      {label: 'Management des équipes', skills: [
+        'Encadrement (interne / externe)','Entretien et évaluation','Transfert de connaissance / Pédagogie / Coaching','Recrutement'
+      ]},
+      {label: 'Gestion de la mission', skills: [
+        'Relation client','Gestion contractuelle','Gestion des risques'
+      ]},
+      {label: ' Expertise', skills: [
+        'Veille','Processus / organisation','Outils'
+      ]},
+      {label: ' Commerce', skills: [
+        'Propositions commerciales','Ecosystème : Réseau / Partenariat / Concurrence','Prospection / Détection d\'opportunité','Animation de compte (Fidélisation / Account Manager)'
+      ]}
+    ];
+    var LEVELS = {CJ:[1,2],CC:[3,4],CS:[5,6],MAN:[7,8],SM:[9,10],ASS:[11,12],FOND:[13,14]};
+    class SmAutoEval extends Polymer.Element {
+      static get is() { return 'sm-auto-eval';}
+      static get properties() {
+        return {
+          skills: {
+            type: String,
+            value: SKILLS
+          },
+          user: {
+            type: Object,
+            notify: true
+          }
+        };
+      }
+      _changeVal(e){
+        this.set('user.autoEval.'+e.model.rub_no+'.'+e.model.skill_no,e.target.value);
+        //console.log("#mark-"+e.model.rub_no+"-"+e.model.skill_no);
+        //console.log(this.shadowRoot.querySelector("#mark-"+e.model.rub_no+"-"+e.model.skill_no));
+        if(this.shadowRoot.querySelector("#mark-"+e.model.rub_no+"-"+e.model.skill_no)){
+          this.shadowRoot.querySelector("#mark-"+e.model.rub_no+"-"+e.model.skill_no).textContent = this.user.autoEval[e.model.rub_no][e.model.skill_no];
+        }
+        //else{console.log("#mark-"+e.model.rub_no+"-"+e.model.skill_no+" not found !!");}
+      }
+      arrayItem(change, index, path) {
+        return this.get(path, change.base[index]);;
+      }
+      _collapseSkills(e){
+        this.shadowRoot.querySelector("#rub-"+e.model.rub_no).toggle();
+      }
+      _sendEval(e){
+        if(this.user.statusAutoEval == 'draft'){
+          this.set('user.statusAutoEval','Soumise');
+          e.target.setAttribute('disabled',true);
+          e.target.setAttribute('icon','sm-icons:done');
+        }
+      }
+    }
+    window.customElements.define(SmAutoEval.is, SmAutoEval);
+  </script>
+</dom-module>

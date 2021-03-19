@@ -1,0 +1,178 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-layout/app-layout.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="sm-staffing.html">
+<link rel="import" href="sm-timesheet.html">
+<link rel="import" href="sm-expense.html">
+<link rel="import" href="sm-conges.html">
+<link rel="import" href="sm-auto-eval.html">
+<link rel="import" href="sm-eval.html">
+<link rel="import" href="sm-index.html">
+<link rel="import" href="sm-icons.html">
+  
+  <dom-module id="sm-app">
+  <template>
+    <style include="shared-styles">
+      app-drawer-layout:not([narrow]) [drawer-toggle] {display: none;}
+      app-header{background-color:var(--staff-me-primary-accent-color);}
+      iron-selector{margin-top:24px;}
+      a.row{padding:12px;color:#666;}
+      a.row > span{margin-left:24px;}
+      a.iron-selected{font-weight:bold;color: var(--staff-me-primary-accent-color);}
+    </style>
+
+    <app-location route="{{route}}"></app-location>
+    <app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
+    <app-route active="{{subRouteActive}}" route="{{subroute}}" pattern="/:pageParam" data="{{subRouteData}}" tail="{{deeproute}}"></app-route>
+
+    <app-drawer-layout id="layout" fullbleed>
+      <app-drawer slot="drawer" id="drawer">
+        <app-header shadow fixed>
+          <app-toolbar>
+            <img class="circle" src="[[profile.photo]]"></img>
+            <div>[[profile.name]]</div>            
+          </app-toolbar>
+        </app-header>
+        <iron-selector id="selector" attr-for-selected="name" selected="[[routeData.page]]" fallback-selection="conges">
+          <a name="index" class="row" href="/" on-click="_toggleDrawer">
+            <iron-icon icon="sm-icons:index"></iron-icon>
+            <span>Tableau de Bord</span>
+          </a>
+          <a name="timesheet" class="row" href="/timesheet" on-click="_toggleDrawer">
+            <iron-icon icon="sm-icons:timesheet"></iron-icon>
+            <span>RMA</span>
+          </a>
+          <a name="expense" class="row" href="/expense" on-click="_toggleDrawer">
+            <iron-icon icon="sm-icons:expense"></iron-icon>
+            <span>Notes de Frais</span>
+          </a>
+          <a name="conges" class="row" href="/conges" on-click="_toggleDrawer">
+            <iron-icon icon="sm-icons:conges"></iron-icon>
+            <span>Suivi de mes congés</span>
+          </a>
+          <a name="staffing" class="row" href="/staffing" on-click="_toggleDrawer">
+            <iron-icon icon="sm-icons:staffing"></iron-icon>
+            <span>Staffing</span>
+          </a>
+          <a name="auto-eval" class="row" href="/auto-eval" on-click="_toggleDrawer" hidden="[[!profile.isEval]]">
+            <iron-icon icon="sm-icons:auto-eval"></iron-icon>
+            <span>Auto-Evaluation</span>
+          </a>
+          <a name="eval" class="row" href="/eval" on-click="_toggleDrawer" hidden="[[!profile.isManager]]">
+            <iron-icon icon="sm-icons:eval"></iron-icon>
+            <span>Evals à valider</span>
+          </a>
+        </iron-selector>    
+        <a class="row footer" href="/" on-click="_changeProfile">
+          <iron-icon icon="sm-icons:switch"></iron-icon>
+          <span>Changer de profil</span>
+        </a>
+      </app-drawer>
+      <app-header-layout>
+        <app-header slot="header" shadow fixed>
+          <app-toolbar>
+            <paper-icon-button icon="sm-icons:menu" drawer-toggle></paper-icon-button>
+            <div main-title>Staff Me If You Can</div>
+          </app-toolbar>
+        </app-header>
+
+        <iron-pages id="main" selected="[[routeData.page]]" attr-for-selected="name" fallback-selection="index" role="main" hidden="{{subRouteActive}}">
+          <sm-index name="index"></sm-index>
+          <sm-timesheet name="timesheet"></sm-timesheet>
+          <sm-expense name="expense"></sm-expense>
+          <sm-conges name="conges"></sm-conges>
+          <sm-staffing name="staffing"></sm-staffing>
+          <sm-auto-eval user="{{consultant}}" name="auto-eval"></sm-auto-eval>
+          <sm-eval user="{{consultant}}" name="eval"></sm-eval>
+        </iron-pages>
+
+        <!-- Gestion d'une sous-route
+        <iron-pages id="secondary" selected="[[routeData.page]]" attr-for-selected="name" fallback-selection="jobs" hidden="{{!subRouteActive}}">
+          <sm-job-detail jobid="[[subRouteData.pageParam]]" name="auto-eval"></sm-job-detail>
+        </iron-pages>
+        -->
+
+      </app-header-layout>
+    </app-drawer-layout>  
+
+  </template>
+
+  <script>
+    var CONSULTANT = {
+      name: 'Guilhem',
+      manager: 'Jérémy',
+      photo: 'images/gcaz.jpg',
+      photo_man: 'images/jaym.png',
+      level: 'MAN',
+      isEval: true,
+      isManager: false,
+      autoEval: [[6,7,6,6,5,6,6,6,6,5,6,6],[6,6,6,5,6,5,6],[6,6,6,4],[6,6,5],[6,5,6],[6,5,5,6]],
+      statusAutoEval: 'draft',
+      staffingTarget: 0.74,
+      staffingRates:0.8
+    };
+    var MANAGER = {
+      name: 'Jérémy',
+      manager: '',
+      photo: 'images/jaym.png',
+      level: 'ASS',
+      isEval: false,
+      isManager: true,
+      autoEval: null,
+      statusAutoEval: null,
+      staffingTarget: 0.65,
+      staffingRates: 0.6
+    };
+    class SmApp extends Polymer.Element {
+      static get is() { return 'sm-app';}
+      static get properties() {
+        return {
+          consultant: {
+            type: Object,
+            value: CONSULTANT,
+            notify: true
+          },
+          manager: {
+            type: Object,
+            value: MANAGER,
+            notify: true
+          },
+          profile: {
+            type: Object,
+            value: CONSULTANT,
+            notify: true
+          }
+        };
+      }
+
+      ready(){
+        super.ready();
+        console.log('#SmApp : app ready');
+        //this.set('consultant',window.DATA.consultant);
+        this.dispatchEvent(new CustomEvent('app-ready'));
+      }
+
+      _toggleDrawer(){if(this.$.layout.narrow){this.$.drawer.close();}}
+
+      _changeProfile(){
+        if(!this.profile.isManager){
+          this.set('profile',this.manager);
+        }
+        else{
+          this.set('profile',this.consultant);
+        }
+      }
+    }
+    window.customElements.define(SmApp.is, SmApp);
+  </script>
+</dom-module>

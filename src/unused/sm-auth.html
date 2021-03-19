@@ -1,0 +1,148 @@
+<dom-module id="sm-auth">
+	<template>
+		<style>
+		</style>
+		<firebase-auth  id="fbAuth"
+						on-error="handleFbError"
+						app-name="staffMe"
+						signed-in="{{signedIn}}" user="{{user}}">
+		</firebase-auth>
+		<!--<firebase-document id="document" app-name="staffMe" path="/makers/[[user.uid]]" data="{{userData}}"></firebase-document> -->
+	</template>   
+	<!--<script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.13/js/adal.min.js"></script> -->
+	<script>
+    class SmAuth extends Polymer.Element {
+      static get is() { return 'sm-auth';}
+      static get properties() {
+        return {
+					clientId: {
+						type: String,
+						reflectToAttribute: true
+					},
+					redirectUri: {
+						type: String,
+						reflectToAttribute: true
+					},
+					popUp: {
+						type: Boolean,
+						reflectToAttribute: true
+					},
+					adal: {
+						type: Object,
+						value: null
+					},
+					user: {
+						type: Object,
+						notify: true,
+						value: {username: 'guilhem.cazenave@advents.fr', given_name: 'Guilhem', photo_url:'gcaz.jpg'},
+						observer: '_userChanged'
+					},
+					userData: {
+						type: Object,
+						notify: true,
+						value: null,
+						observer: '_userDataChanged'
+					},
+					idToken: {
+						type: String,
+						notify: true,
+						value: null
+					},
+					signedIn: {
+						type: Boolean,
+						notify: true,
+						observer: '_signedInChanged'
+					}
+				};
+			}
+
+			_initAdal(){
+				//this.adal = new AuthenticationContext({
+				//	instance: 'https://login.microsoftonline.com/',
+				//	tenant: 'common', //COMMON OR YOUR TENANT ID
+//
+				//	clientId: this.clientId, //This is your client ID
+				//	redirectUri: this.redirectUri, //This is your redirect URI
+//
+				//	callback: this.userSignedIn,
+				//	popUp: this.popUp
+				//});
+			}
+
+			signIn() {
+				//if(!this.adal){this._initAdal();}
+				//this.adal.login();
+			}
+
+			logout() {
+				//if(!this.adal){this._initAdal();}
+				this.$.fbAuth.signOut();
+			}
+
+			authenticate(m) {
+				//console.log(window.location.hash.split('&'));
+				//this.set('idToken',window.location.hash.split('&')[0].split('=')[1],this);
+				//if(!this.adal){this._initAdal();}
+				//this.set('user',this.adal._createUser(this.idToken),this);
+				//console.log(this.user);
+				//console.log(this.idToken);
+				//this.$.fbAuth.signInWithCredential(this.idToken);
+				//this.$.fbAuth.signInWithEmailAndPassword(this.user.profile.unique_name,this.user.profile.unique_name);
+				this.$.fbAuth.signInWithEmailAndPassword(m,m);
+				this.dispatchEvent(new CustomEvent('app-loading'));
+				//this.set('user',{mail: m},this);
+				//window.history.pushState({}, null, '/');
+				//window.location = '/';
+				//window.dispatchEvent(new CustomEvent('location-changed'));
+				//this.$.userAPIData.headers={
+				//	"Authorization" : "Bearer " + this.idToken
+				//};
+				//this.$.userAPIData.generateRequest();
+			}
+
+			handleUserResponse(e){
+				//this.set('user',this.$.userAPIData.lastResponse,this);
+				//console.log(this.user);
+			}
+
+			handleFbError(err){
+				if(err.detail.code == 'auth/user-not-found'){ // First connection for this user
+					this.$.fbAuth.createUserWithEmailAndPassword(this.user.mail,this.user.mail);
+					console.log(err);
+				}
+				else{
+					console.log('oups',err);
+				}				
+			}
+
+			_signedInChanged(){
+			//if(this.user && this.signedIn){ // User FB-authenticated
+			//	this.set('user.fb',this.$.fbAuth.user,this);
+			//}
+			//else{ // User not FB-authenticated
+			//	this.set('user',null,this);
+			//	//this.signIn();
+			//}
+				console.log('signed in changed : ', this.signedIn);
+				this.dispatchEvent(new CustomEvent('app-ready'));
+			}
+
+			_userChanged(){
+				console.log('user : ',this.user);
+				this.fakeAuth();
+			}
+
+			_userDataChanged(){
+				console.log('userdata : ', this.userData);
+			}
+
+			fakeAuth(){
+				this.set('userdata',
+								{username: 'guilhem.cazenave@advents.fr', given_name: 'Guilhem', photo_url:'gcaz.jpg'},
+								this);
+				console.log('userdata : ',this.userdata);
+			}
+		}
+		window.customElements.define(SmAuth.is, SmAuth);
+	</script>
+</dom-module>

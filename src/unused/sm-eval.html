@@ -1,0 +1,85 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="sm-eval">
+  <template>
+    <style include="shared-styles">
+      iron-icon{cursor:pointer;}
+      .row{margin-right:8px;margin-left:8px;width:100%;}
+      div.circle{font-size:24px;height:40px;width:40px;margin-top:8px;background-color:var(--staff-me-third-accent-color);color:#fff;line-height: 40px;}
+      h4{margin-left:12px;cursor:pointer;}
+    </style>
+    <div class="card">
+      <div class="row">
+        <img class="circle" src="[[user.photo]]"></img>
+        <p>Auto-éval de [[user.name]]</p>
+      </div>
+      <div class="row">
+        <p class="flex">Statut : [[user.statusAutoEval]]</p>
+      </div>
+    </div>
+    <template is="dom-repeat" items="{{skills}}" as="sk" index-as="rub_no">
+      <h4 on-click="_collapseSkills">[[sk.label]]</h4>
+      <iron-collapse id="rub-[[rub_no]]">
+        <template is="dom-repeat" items="{{sk.skills}}" as="s" index-as="skill_no">
+          <div class="card">
+            <div class="row">
+              <p class="flex">[[s]]</p>
+              <div class="circle" id="mark-[[rub_no]]-[[skill_no]]">[[arrayItem(user.autoEval.*,rub_no, skill_no)]]</div>
+            </div>
+          </div>
+        </template>
+      </iron-collapse>
+    </template>
+  </template>
+  <script>
+    var SKILLS = [
+      {label: 'Fondamentaux du Consultant', skills: [
+        'Leadership','Travail en équipe','Autonomie / proactivité','Capacité d\'analyse / Résolution de problèmes',
+        'Rédaction de document','Contexte international (langues)','Conduite de réunion','Reporting','Organisation du travail et du temps',
+        'Participation / Animation vie du cabinet','Valeurs du Cabinet','Connaissance de l\'organisation et processus internes'
+      ]},
+      {label: ' Philosophie / méthodologie du conseil', skills: [
+        'Cadrage','Aide au choix','Construction de projet','Validation projet','Après-projet','Conduite du changement','Gestion de projet'
+      ]},
+      {label: 'Management des équipes', skills: [
+        'Encadrement (interne / externe)','Entretien et évaluation','Transfert de connaissance / Pédagogie / Coaching','Recrutement'
+      ]},
+      {label: 'Gestion de la mission', skills: [
+        'Relation client','Gestion contractuelle','Gestion des risques'
+      ]},
+      {label: ' Expertise', skills: [
+        'Veille','Processus / organisation','Outils'
+      ]},
+      {label: ' Commerce', skills: [
+        'Propositions commerciales','Ecosystème : Réseau / Partenariat / Concurrence','Prospection / Détection d\'opportunité','Animation de compte (Fidélisation / Account Manager)'
+      ]}
+    ];
+    var LEVELS = {CJ:[1,2],CC:[3,4],CS:[5,6],MAN:[7,8],SM:[9,10],ASS:[11,12],FOND:[13,14]};
+    class SmEval extends Polymer.Element {
+      static get is() { return 'sm-eval';}
+      static get properties() {
+        return {
+          skills: {
+            type: String,
+            value: SKILLS
+          },
+          user: {
+            type: Object,
+            notify: true
+          }
+        };
+      }
+      arrayItem(change, index, path) {
+        return this.get(path, change.base[index]);;
+      }
+      _collapseSkills(e){
+        this.shadowRoot.querySelector("#rub-"+e.model.rub_no).toggle();
+      }
+    }
+    window.customElements.define(SmEval.is, SmEval);
+  </script>
+</dom-module>

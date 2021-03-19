@@ -1,0 +1,44 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="sm-job-detail">
+  <template>
+    <style>
+      app-header{background-color : var(--staff-me-primary-accent-color);color:#fff;}
+      a:link, a:visited, a:hover, a:active{text-decoration: none;color: #fff;}
+    </style>
+    <app-header condenses>
+        <app-toolbar sticky>
+          <div main-title style="text-align:center;">[[job.title]]</div>
+          <a href="/jobs"><paper-icon-button icon="close"></paper-icon-button></a>
+        </app-toolbar>
+        <app-toolbar>
+          <div main-title style="text-align:center;">[[job.milestone]]</div>
+        </app-toolbar>
+    </app-header>
+    <div>
+      <h2>[[jobid]]</h2>
+      <p>[[job.description]]</p>
+      coucou
+    </div>
+    <firebase-document id="document" app-name="staffMe" path="/jobs/[[jobid]]" data="{{job}}"></firebase-document>
+  </template>
+  <script>
+    class SmJobDetail extends Polymer.Element {
+      static get is() { return 'sm-job-detail';}
+      static get properties() {
+        return {
+          job: {
+            type: Object,
+            notify: true
+          },
+          jobid: {
+            type: String,
+            notify: true
+          }
+        };
+      }
+    }
+    window.customElements.define(SmJobDetail.is, SmJobDetail);
+  </script>
+</dom-module>
